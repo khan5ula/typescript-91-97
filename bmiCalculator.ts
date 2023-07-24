@@ -1,4 +1,35 @@
+interface BmiValues {
+  height: number;
+  weight: number;
+}
+
+const parseBmiArguments = (args: string[]): BmiValues => {
+  if (args.length < 4) throw new Error('Not enough arguments');
+  if (args.length > 4) throw new Error('Too many arguments');
+
+  if (isNaN(Number(args[2])) || isNaN(Number(args[3]))) {
+    throw new Error('Error: Provided values were not numbers!');
+  }
+
+  const height = Number(args[2]);
+  const weight = Number(args[3]);
+
+  if (height < 10 || height > 250) {
+    throw new Error('Error: Invalid height value');
+  }
+
+  if (weight < 10 || weight > 500) {
+    throw new Error('Error: Invalid weight value');
+  }
+
+  return {
+    height,
+    weight,
+  };
+};
+
 const calculateBmi = (height: number, weight: number): string => {
+  console.log(`height: ${height}, weight: ${weight}`);
   const bmi = weight / (height / 100) ** 2;
   let verdict = '';
 
@@ -30,7 +61,17 @@ const calculateBmi = (height: number, weight: number): string => {
     default:
       verdict = 'Undefined. Please check the input';
   }
+
   return verdict;
 };
 
-console.log(calculateBmi(189, 89));
+try {
+  const { height, weight } = parseBmiArguments(process.argv);
+  console.log(calculateBmi(height, weight));
+} catch (error: unknown) {
+  let errorMessage = 'Error: ';
+  if (error instanceof Error) {
+    errorMessage += error.message;
+  }
+  console.log(errorMessage);
+}

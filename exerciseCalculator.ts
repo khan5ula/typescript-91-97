@@ -8,6 +8,37 @@ interface Result {
   average: number;
 }
 
+interface trainingArgs {
+  trainingHours: number[];
+  target: number;
+}
+
+const parseExerciseArguments = (args: string[]): trainingArgs => {
+  if (args.length < 4) {
+    throw new Error('Error: Not enough arguments');
+  }
+
+  let trainingHours: number[] = [];
+
+  for (let i = 2; i < args.length - 1; i++) {
+    if (isNaN(Number(args[i]))) {
+      throw new Error('Error: Training hours expected in numeric format');
+    }
+    trainingHours.push(Number(args[i]));
+  }
+
+  if (isNaN(Number(args[args.length - 1]))) {
+    throw new Error('Error: Target must be numeric');
+  }
+
+  const target = Number(args[args.length - 1]);
+
+  return {
+    trainingHours,
+    target,
+  };
+};
+
 const calculateExcercises = (
   excercises: number[],
   originalTarget: number
@@ -69,4 +100,13 @@ const setRatingDescription = (rating: number): string => {
   return description;
 };
 
-console.log(calculateExcercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+  const { trainingHours, target } = parseExerciseArguments(process.argv);
+  console.log(calculateExcercises(trainingHours, target));
+} catch (error: unknown) {
+  let errorMessage = 'Error: ';
+  if (error instanceof Error) {
+    errorMessage += error.message;
+  }
+  console.log(errorMessage);
+}
