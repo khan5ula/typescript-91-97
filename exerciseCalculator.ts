@@ -18,7 +18,7 @@ const parseExerciseArguments = (args: string[]): trainingArgs => {
     throw new Error('Error: Not enough arguments');
   }
 
-  let trainingHours: number[] = [];
+  const trainingHours: number[] = [];
 
   for (let i = 2; i < args.length - 1; i++) {
     if (isNaN(Number(args[i]))) {
@@ -67,6 +67,7 @@ const findRating = (average: number): number => {
   switch (true) {
     case average <= 1:
       result = 1;
+      break;
     case average > 1 && average <= 2:
       result = 2;
       break;
