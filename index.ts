@@ -1,7 +1,9 @@
 import express from 'express';
 import { calculateBmi } from './bmiCalculator';
+import { calculateExcercises } from './exerciseCalculator';
 
 const app = express();
+app.use(express.json());
 
 app.get('/bmi', (_req, res) => {
   const { height, weight } = _req.query;
@@ -25,6 +27,45 @@ app.get('/bmi', (_req, res) => {
   };
 
   return res.send(response);
+});
+
+app.post('/exercises', (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const dailyExercises = req.body.daily_exercises;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const target: number = req.body.target;
+
+  if (!dailyExercises || !target) {
+    res.status(400);
+    return res.send('error: parameters missing');
+  }
+
+  const isArray = Array.isArray(dailyExercises);
+
+  if (!isArray) {
+    if (isNaN(Number(dailyExercises)))
+      throw new Error('error: malformatted parameters');
+  }
+
+  if (isArray) {
+    for (let i = 0; i < dailyExercises.length; i++) {
+      if (isNaN(Number(dailyExercises[i]))) {
+        throw new Error('error: malformatted parameters');
+      }
+    }
+  }
+
+  if (isNaN(Number(target))) {
+    res.status(400);
+    return res.send('error: malformatted parameters');
+  }
+
+  const result = calculateExcercises(dailyExercises as number[], target);
+
+  console.log(dailyExercises, target);
+
+  return res.send(result);
 });
 
 const PORT = 3002;
